@@ -1,4 +1,5 @@
-use clap::{ArgGroup, Parser};
+use clap::{ArgEnum, ArgGroup, Parser};
+use owo_colors::{colors::*, OwoColorize, Stream::Stdout};
 
 const ABOUT: &str = "A tool that issues HTTP requests, then parses, sorts and displays relevant HTTP response headers.";
 
@@ -6,22 +7,47 @@ const ABOUT: &str = "A tool that issues HTTP requests, then parses, sorts and di
 #[clap(author, version = "1.0.0", about = ABOUT)]
 #[clap(group(
         ArgGroup::new("format")
-        .args(&["json", "plain"]),
+        .args(&["json", "color"]),
 ))]
 struct Args {
-    /// Comma-separated list of headers to be displayed
-    #[clap(short, long, required = false)]
-    filter: String,
-    /// Output is formatted into JSON for easy parsing
+    /// Output formatting can be modified based on TTY
+    #[clap(short, long, arg_enum, default_value = "auto")]
+    color: Color,
+    /// Comma-separated list of headers to display
+    #[clap(short, long)]
+    filter: Option<String>,
+    /// Output is formatted into JSON
     #[clap(short, long)]
     json: bool,
-    /// Output is formatted without any extraneous spacing or ANSI colour code
-    #[clap(short, long)]
-    plain: bool,
+    /// Output displays additional contextual information
+    #[clap(short, long, global = true)]
+    verbose: bool,
+}
+
+#[derive(ArgEnum, Clone, Copy, Debug)]
+enum Color {
+    Always,
+    Auto,
+    Never,
+}
+
+impl Color {
+    fn init(self) {
+        match self {
+            Color::Always => owo_colors::set_override(true),
+            Color::Auto => {}
+            Color::Never => owo_colors::set_override(false),
+        }
+    }
 }
 
 fn main() {
     let args = Args::parse();
+    args.color.init();
 
-    println!("{:?}", args)
+    println!(
+        "{} {:?}",
+        "foo".if_supports_color(Stdout, |text| text.bg::<BrightYellow>().fg::<Black>()),
+        args
+    )
 }
