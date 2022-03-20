@@ -1,6 +1,9 @@
 use clap::{ArgEnum, ArgGroup, Parser};
 use owo_colors::{OwoColorize, Stream::Stdout, Style};
 use reqwest;
+use reqwest::header::HeaderMap;
+use serde::Serialize;
+use serde_json;
 
 const ABOUT: &str = "A tool that issues HTTP requests, then parses, sorts and displays relevant HTTP response headers.";
 
@@ -33,6 +36,15 @@ impl App {
         let heading = Style::new().black().on_bright_yellow().bold();
         let resp = reqwest::blocking::get(&self.url)?;
 
+        if self.json {
+            let h = HttpResp {
+                headers: resp.headers(),
+            };
+            let j = serde_json::to_string(&h)?;
+            println!("{}", j);
+            return Ok(());
+        }
+
         for (key, value) in resp.headers().iter() {
             println!(
                 "{:?}:\n  {:?}\n",
@@ -60,4 +72,11 @@ impl Color {
             Color::Never => owo_colors::set_override(false),
         }
     }
+}
+
+#[derive(Debug, Serialize)]
+#[serde(transparent)]
+struct HttpResp<'a> {
+    #[serde(with = "http_serde::header_map")]
+    headers: &'a HeaderMap,
 }
