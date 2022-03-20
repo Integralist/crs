@@ -19,6 +19,8 @@ pub struct App {
     /// Output is formatted into JSON
     #[clap(short, long)]
     json: bool,
+    /// URL to request
+    url: String,
     /// Output displays additional contextual information
     #[clap(short, long, global = true)]
     verbose: bool,
@@ -27,6 +29,8 @@ pub struct App {
 impl App {
     pub fn exec(self) -> Result<(), Box<dyn std::error::Error>> {
         self.color.init();
+
+        println!("Value for url: {}", self.url);
 
         println!(
             "{} {:?}",
