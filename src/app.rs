@@ -1,5 +1,6 @@
 use clap::{ArgEnum, ArgGroup, Parser};
-use owo_colors::{colors::*, OwoColorize, Stream::Stdout};
+use owo_colors::{OwoColorize, Stream::Stdout, Style};
+use reqwest;
 
 const ABOUT: &str = "A tool that issues HTTP requests, then parses, sorts and displays relevant HTTP response headers.";
 
@@ -29,14 +30,16 @@ pub struct App {
 impl App {
     pub fn exec(self) -> Result<(), Box<dyn std::error::Error>> {
         self.color.init();
+        let heading = Style::new().black().on_bright_yellow().bold();
+        let resp = reqwest::blocking::get(&self.url)?;
 
-        println!("Value for url: {}", self.url);
-
-        println!(
-            "{} {:?}",
-            "foo".if_supports_color(Stdout, |text| text.bg::<BrightYellow>().fg::<Black>()),
-            self
-        );
+        for (key, value) in resp.headers().iter() {
+            println!(
+                "{:?}:\n  {:?}\n",
+                key.if_supports_color(Stdout, |text| text.style(heading)),
+                value
+            );
+        }
 
         Ok(())
     }
