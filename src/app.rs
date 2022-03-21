@@ -26,9 +26,6 @@ pub struct App {
     json: bool,
     /// URL to request
     url: String,
-    /// Output displays additional contextual information
-    #[clap(short, long, global = true)]
-    verbose: bool,
 }
 
 impl App {
