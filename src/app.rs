@@ -1,3 +1,4 @@
+use anyhow::{Context, Result};
 use clap::{ArgEnum, ArgGroup, Parser};
 use owo_colors::{OwoColorize, Stream::Stdout, Style};
 use reqwest;
@@ -31,16 +32,18 @@ pub struct App {
 }
 
 impl App {
-    pub fn exec(self) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn exec(self) -> Result<()> {
         self.color.init();
         let heading = Style::new().black().on_bright_yellow().bold();
-        let resp = reqwest::blocking::get(&self.url)?;
+        let resp = reqwest::blocking::get(&self.url)
+            .with_context(|| format!("Failed to GET: {}", &self.url))?;
 
         if self.json {
             let h = HttpResp {
                 headers: resp.headers(),
             };
-            let j = serde_json::to_value(&h)?;
+            let j = serde_json::to_value(&h)
+                .with_context(|| format!("Failed to convert response headers to JSON: {:?}", &h))?;
             println!("{}", j["headers"]);
             return Ok(());
         }
