@@ -31,7 +31,9 @@ pub struct App {
 impl App {
     pub fn exec(self) -> Result<()> {
         self.color.init();
+
         let heading = Style::new().black().on_bright_yellow().bold();
+        let status = Style::new().black().on_bright_blue().bold();
         let resp = reqwest::blocking::get(&self.url)
             .with_context(|| format!("Failed to GET: {}", &self.url))?;
 
@@ -52,6 +54,12 @@ impl App {
                 value
             );
         }
+
+        println!(
+            "{}: {}",
+            "Status Code".if_supports_color(Stdout, |text| text.style(status)),
+            resp.status()
+        );
 
         Ok(())
     }
