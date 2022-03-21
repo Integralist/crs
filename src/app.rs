@@ -40,8 +40,8 @@ impl App {
             let h = HttpResp {
                 headers: resp.headers(),
             };
-            let j = serde_json::to_string(&h)?;
-            println!("{}", j);
+            let j = serde_json::to_value(&h)?;
+            println!("{}", j["headers"]);
             return Ok(());
         }
 
@@ -75,7 +75,6 @@ impl Color {
 }
 
 #[derive(Debug, Serialize)]
-#[serde(transparent)]
 struct HttpResp<'a> {
     #[serde(with = "http_serde::header_map")]
     headers: &'a HeaderMap,
