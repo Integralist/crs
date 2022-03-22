@@ -1,6 +1,7 @@
 use anyhow::{Context, Result};
 use clap::{ArgEnum, ArgGroup, Parser};
 use owo_colors::{OwoColorize, Stream::Stdout, Style};
+use regex::Regex;
 use reqwest;
 use reqwest::header::{HeaderMap, HeaderName, HeaderValue};
 use reqwest::StatusCode;
@@ -65,7 +66,8 @@ impl App {
                 .filter(|h| {
                     let mut keep = false;
                     for f in &filters {
-                        if f == h.0 {
+                        let re = Regex::new(format!("(?i){f}").as_str()).unwrap();
+                        if re.is_match(h.0.as_str()) {
                             keep = true;
                         }
                     }
