@@ -41,19 +41,13 @@ impl App {
             .with_context(|| format!("Failed to GET: {}", &self.url))?;
 
         if let Some(f) = self.filter {
+            let filters: Vec<_> = f.split(",").collect();
             let headers: HashMap<_, _> = resp
                 .headers()
                 .iter()
                 .filter(|h| {
                     let mut keep = false;
-                    // There are some complications with the following for loop.
-                    //
-                    // 1. We need a ref to f, otherwise it'll be moved into the for loop.
-                    // 2. We're executing split() N times, which isn't ideal.
-                    //
-                    // Unfortunately I'm unable to execute the split() once and reuse it.
-                    // As a Split type doesn't implement Copy, so it's moved into the loop.
-                    for f in (&f).split(",") {
+                    for f in &filters {
                         if f == h.0 {
                             keep = true;
                         }
@@ -84,6 +78,7 @@ impl App {
     }
 }
 
+// TODO: Batch up the writes into a buffer io::BufWriter::new(stdout).
 fn display_headers<'a, 'b, T>(i: T, heading: Style)
 where
     T: Iterator<Item = (&'a HeaderName, &'b HeaderValue)>,
