@@ -56,19 +56,20 @@ impl App {
                 })
                 .collect();
 
+            if self.json {
+                // We already have HashMap so we just print it.
+                // No need to pass to display_json like done below.
+                println!("{:?}", headers);
+                return Ok(());
+            }
+
             display_headers(headers.into_iter(), heading);
             display_status(resp.status(), status);
             return Ok(());
         }
 
-        // TODO: Refactor into separate function so I can call it from inside the above filter conditional.
         if self.json {
-            let h = HttpResp {
-                headers: resp.headers(),
-            };
-            let j = serde_json::to_value(&h)
-                .with_context(|| format!("Failed to convert response headers to JSON: {:?}", &h))?;
-            println!("{}", j["headers"]);
+            display_json(resp.headers())?;
             return Ok(());
         }
 
@@ -76,6 +77,16 @@ impl App {
         display_status(resp.status(), status);
         Ok(())
     }
+}
+
+fn display_json(headers: &HeaderMap) -> Result<()> {
+    let h = HttpResp {
+        headers, // using short-hand notation for struct field
+    };
+    let j = serde_json::to_value(&h)
+        .with_context(|| format!("Failed to convert response headers to JSON: {:?}", &h))?;
+    println!("{}", j["headers"]);
+    Ok(())
 }
 
 // TODO: Batch up the writes into a buffer io::BufWriter::new(stdout).
