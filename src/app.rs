@@ -2,9 +2,11 @@ use anyhow::{Context, Result};
 use clap::{ArgEnum, ArgGroup, Parser};
 use owo_colors::{OwoColorize, Stream::Stdout, Style};
 use reqwest;
-use reqwest::header::HeaderMap;
+use reqwest::header::{HeaderMap, HeaderName, HeaderValue};
+use reqwest::StatusCode;
 use serde::Serialize;
 use serde_json;
+use std::collections::HashMap;
 
 const ABOUT: &str = "A tool that issues HTTP requests, then parses, sorts and displays relevant HTTP response headers.";
 
@@ -34,9 +36,38 @@ impl App {
 
         let heading = Style::new().black().on_bright_yellow().bold();
         let status = Style::new().black().on_bright_blue().bold();
+
         let resp = reqwest::blocking::get(&self.url)
             .with_context(|| format!("Failed to GET: {}", &self.url))?;
 
+        if let Some(f) = self.filter {
+            let headers: HashMap<_, _> = resp
+                .headers()
+                .iter()
+                .filter(|h| {
+                    let mut keep = false;
+                    // There are some complications with the following for loop.
+                    //
+                    // 1. We need a ref to f, otherwise it'll be moved into the for loop.
+                    // 2. We're executing split() N times, which isn't ideal.
+                    //
+                    // Unfortunately I'm unable to execute the split() once and reuse it.
+                    // As a Split type doesn't implement Copy, so it's moved into the loop.
+                    for f in (&f).split(",") {
+                        if f == h.0 {
+                            keep = true;
+                        }
+                    }
+                    keep
+                })
+                .collect();
+
+            display_headers(headers.into_iter(), heading);
+            display_status(resp.status(), status);
+            return Ok(());
+        }
+
+        // TODO: Refactor into separate function so I can call it from inside the above filter conditional.
         if self.json {
             let h = HttpResp {
                 headers: resp.headers(),
@@ -47,22 +78,31 @@ impl App {
             return Ok(());
         }
 
-        for (key, value) in resp.headers().iter() {
-            println!(
-                "{:?}:\n  {:?}\n",
-                key.if_supports_color(Stdout, |text| text.style(heading)),
-                value
-            );
-        }
-
-        println!(
-            "{}: {}",
-            "Status Code".if_supports_color(Stdout, |text| text.style(status)),
-            resp.status()
-        );
-
+        display_headers(resp.headers().iter(), heading);
+        display_status(resp.status(), status);
         Ok(())
     }
+}
+
+fn display_headers<'a, 'b, T>(i: T, heading: Style)
+where
+    T: Iterator<Item = (&'a HeaderName, &'b HeaderValue)>,
+{
+    for (key, value) in i {
+        println!(
+            "{:?}:\n  {:?}\n",
+            key.if_supports_color(Stdout, |text| text.style(heading)),
+            value
+        );
+    }
+}
+
+fn display_status(sc: StatusCode, status: Style) {
+    println!(
+        "{}: {}",
+        "Status Code".if_supports_color(Stdout, |text| text.style(status)),
+        sc
+    );
 }
 
 #[derive(ArgEnum, Clone, Copy, Debug)]
