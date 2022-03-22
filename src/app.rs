@@ -10,6 +10,23 @@ use std::collections::HashMap;
 
 const ABOUT: &str = "A tool that issues HTTP requests, then parses, sorts and displays relevant HTTP response headers.";
 
+#[derive(ArgEnum, Clone, Copy, Debug)]
+enum Color {
+    Always,
+    Auto,
+    Never,
+}
+
+impl Color {
+    fn init(self) {
+        match self {
+            Color::Always => owo_colors::set_override(true),
+            Color::Auto => {}
+            Color::Never => owo_colors::set_override(false),
+        }
+    }
+}
+
 #[derive(Parser, Debug)]
 #[clap(author, version = "1.0.0", about = ABOUT)]
 #[clap(group(
@@ -109,23 +126,6 @@ fn display_status(sc: StatusCode, status: Style) {
         "Status Code".if_supports_color(Stdout, |text| text.style(status)),
         sc
     );
-}
-
-#[derive(ArgEnum, Clone, Copy, Debug)]
-enum Color {
-    Always,
-    Auto,
-    Never,
-}
-
-impl Color {
-    fn init(self) {
-        match self {
-            Color::Always => owo_colors::set_override(true),
-            Color::Auto => {}
-            Color::Never => owo_colors::set_override(false),
-        }
-    }
 }
 
 #[derive(Debug, Serialize)]
