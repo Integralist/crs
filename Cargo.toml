@@ -2,6 +2,12 @@
 name = "crs"
 version = "1.0.0"
 edition = "2021"
+license = "MIT"
+description = "CLI that can make a HTTP request, then sort, filter and display the HTTP response headers."
+repository = "https://github.com/Integralist/crs"
+readme = "README.md"
+categories = ["command-line-interface", "command-line-utilities"]
+keywords = ["cli", "http"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
