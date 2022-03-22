@@ -59,15 +59,17 @@ impl App {
             .with_context(|| format!("Failed to GET: {}", &self.url))?;
 
         if let Some(f) = self.filter {
-            let filters: Vec<_> = f.split(",").collect();
+            let filters: Vec<_> = f
+                .split(",")
+                .map(|f| Regex::new(format!("(?i){f}").as_str()).unwrap())
+                .collect();
             let headers: HashMap<_, _> = resp
                 .headers()
                 .iter()
                 .filter(|h| {
                     let mut keep = false;
                     for f in &filters {
-                        let re = Regex::new(format!("(?i){f}").as_str()).unwrap();
-                        if re.is_match(h.0.as_str()) {
+                        if f.is_match(h.0.as_str()) {
                             keep = true;
                         }
                     }
