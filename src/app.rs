@@ -102,6 +102,9 @@ impl App {
     }
 }
 
+// TODO: Move to display module.
+// TODO: Consider creating a Headers struct in a header module so we can just call 'display()' and
+// internally it handles the display logic regarding whether it's JSON or not.
 fn display_json(headers: &HeaderMap) -> Result<()> {
     let h = HttpResp {
         headers, // using short-hand notation for struct field
