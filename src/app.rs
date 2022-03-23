@@ -9,7 +9,8 @@ use serde::Serialize;
 use serde_json;
 use std::collections::HashMap;
 
-const ABOUT: &str = "A tool that issues HTTP requests, then parses, sorts and displays relevant HTTP response headers.";
+const ABOUT: &str =
+    "A CLI that can make a HTTP request, then sort, filter and display the HTTP response headers.";
 
 #[derive(ArgEnum, Clone, Copy, Debug)]
 enum Color {
@@ -63,6 +64,7 @@ impl App {
                 .split(",")
                 .map(|f| Regex::new(format!("(?i){f}").as_str()).unwrap())
                 .collect();
+
             let headers: HashMap<_, _> = resp
                 .headers()
                 .iter()
