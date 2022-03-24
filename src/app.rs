@@ -59,8 +59,17 @@ impl App {
         let resp = reqwest::blocking::get(&self.url)
             .with_context(|| format!("Failed to GET: {}", &self.url))?;
 
-        // Used for the sake of persisting headers to be displayed sorted.
-        let mut headersv = Vec::new();
+        // TODO: reduce duplication by moving the post filter steps into a separate function.
+        //
+        // let headers = resp
+        //     .headers()
+        //     .iter();
+        //
+        //  Then after the following `if let` we can call that separate function like:
+        //
+        //  let headers = post_filter_steps(headers)
+        //
+        //  ..and have it return the BTreeMap.
 
         if let Some(f) = self.filter {
             let filters: Vec<_> = f
@@ -68,21 +77,27 @@ impl App {
                 .map(|f| Regex::new(format!("(?i){f}").as_str()).unwrap())
                 .collect();
 
-            for header in resp.headers().iter() {
-                for f in &filters {
-                    if f.is_match(header.0.as_str()) {
-                        headersv.push((header.0.as_str(), header.1.to_str().unwrap()));
+            // We were not able to collect a Reqwest HeaderMap into a BTreeMap (needed for sorting).
+            // This was due to a problem with HeaderName not implementing the Ord trait.
+            // The 'NewType' Rust pattern also revealed a bunch of missing traits.
+            // So instead we filter, map to a tuple, then collect that to a BTreeMap.
+            let headers = resp
+                .headers()
+                .iter()
+                .filter(|header| {
+                    for f in &filters {
+                        if f.is_match(header.0.as_str()) {
+                            return true;
+                        }
                     }
-                }
-            }
-
-            headersv.sort();
-
-            // We take the sorted Vector and collect it into a BTreeMap.
-            // This allows us to correctly display it as JSON.
-            let headers = headersv.into_iter().collect::<BTreeMap<_, _>>();
+                    false
+                })
+                .map(|header| (header.0.as_str(), header.1.to_str().unwrap()))
+                .into_iter()
+                .collect::<BTreeMap<_, _>>();
 
             if self.json {
+                // Debug output for BTreeMap is JSON so no need to be parsed via serde.
                 println!("{:?}", headers);
                 return Ok(());
             }
@@ -93,17 +108,19 @@ impl App {
         }
 
         if self.json {
+            // Reqwest headers get automatically sorted via serde.
             display_json(resp.headers())?;
             return Ok(());
         }
 
-        // TODO: Need to do as filter above where we sort via vector.
-        display_headers(
-            resp.headers()
-                .iter()
-                .map(|h| (h.0.as_str(), h.1.to_str().unwrap())),
-            heading,
-        );
+        let headers = resp
+            .headers()
+            .iter()
+            .map(|header| (header.0.as_str(), header.1.to_str().unwrap()))
+            .into_iter()
+            .collect::<BTreeMap<_, _>>();
+
+        display_headers(headers.into_iter(), heading);
         display_status(resp.status(), status);
         Ok(())
     }
