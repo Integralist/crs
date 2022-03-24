@@ -3,11 +3,11 @@ use clap::{ArgEnum, ArgGroup, Parser};
 use owo_colors::{OwoColorize, Stream::Stdout, Style};
 use regex::Regex;
 use reqwest;
-use reqwest::header::{HeaderMap, HeaderName, HeaderValue};
+use reqwest::header::HeaderMap;
 use reqwest::StatusCode;
 use serde::Serialize;
 use serde_json;
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 const ABOUT: &str =
     "A CLI that can make a HTTP request, then sort, filter and display the HTTP response headers.";
@@ -59,29 +59,30 @@ impl App {
         let resp = reqwest::blocking::get(&self.url)
             .with_context(|| format!("Failed to GET: {}", &self.url))?;
 
+        // Used for the sake of persisting headers to be displayed sorted.
+        let mut headersv = Vec::new();
+
         if let Some(f) = self.filter {
             let filters: Vec<_> = f
                 .split(",")
                 .map(|f| Regex::new(format!("(?i){f}").as_str()).unwrap())
                 .collect();
 
-            let headers: HashMap<_, _> = resp
-                .headers()
-                .iter()
-                .filter(|h| {
-                    let mut keep = false;
-                    for f in &filters {
-                        if f.is_match(h.0.as_str()) {
-                            keep = true;
-                        }
+            for header in resp.headers().iter() {
+                for f in &filters {
+                    if f.is_match(header.0.as_str()) {
+                        headersv.push((header.0.as_str(), header.1.to_str().unwrap()));
                     }
-                    keep
-                })
-                .collect();
+                }
+            }
+
+            headersv.sort();
+
+            // We take the sorted Vector and collect it into a BTreeMap.
+            // This allows us to correctly display it as JSON.
+            let headers = headersv.into_iter().collect::<BTreeMap<_, _>>();
 
             if self.json {
-                // We already have HashMap so we just print it.
-                // No need to pass to display_json like done below.
                 println!("{:?}", headers);
                 return Ok(());
             }
@@ -96,7 +97,13 @@ impl App {
             return Ok(());
         }
 
-        display_headers(resp.headers().iter(), heading);
+        // TODO: Need to do as filter above where we sort via vector.
+        display_headers(
+            resp.headers()
+                .iter()
+                .map(|h| (h.0.as_str(), h.1.to_str().unwrap())),
+            heading,
+        );
         display_status(resp.status(), status);
         Ok(())
     }
@@ -118,7 +125,7 @@ fn display_json(headers: &HeaderMap) -> Result<()> {
 // TODO: Batch up the writes into a buffer io::BufWriter::new(stdout).
 fn display_headers<'a, 'b, T>(i: T, heading: Style)
 where
-    T: Iterator<Item = (&'a HeaderName, &'b HeaderValue)>,
+    T: Iterator<Item = (&'a str, &'b str)>,
 {
     for (key, value) in i {
         println!(
