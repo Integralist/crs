@@ -68,18 +68,18 @@ impl<'a, 'b> Parsed<'a, 'b> {
             return;
         }
 
-        let refh = &self.headers;
+        self.display_headers(&self.headers);
+        self.display_status(status_code);
+    }
 
-        // TODO: Batch up the writes into a buffer io::BufWriter::new(stdout).
-        for (key, value) in refh.into_iter() {
+    fn display_headers(&self, headers: &BTreeMap<&'a str, &'b str>) {
+        for (key, value) in headers.into_iter() {
             println!(
                 "{:?}:\n  {:?}\n",
                 key.if_supports_color(Stdout, |text| text.style(self.styles.heading)),
                 value
             );
         }
-
-        self.display_status(status_code);
     }
 
     fn display_status(&self, sc: StatusCode) {
