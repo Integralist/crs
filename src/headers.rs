@@ -33,7 +33,7 @@ impl<'a, 'b> Headers<'a, 'b> {
         }
     }
 
-    pub fn display(&self) -> Result<()> {
+    pub fn parse(&self) -> Result<()> {
         if let Some(f) = self.filters {
             let filters: Vec<_> = f
                 .split(",")
