@@ -34,7 +34,8 @@ impl App {
         let resp = reqwest::blocking::get(&self.url)
             .with_context(|| format!("Failed to GET: {}", &self.url))?;
 
-        Headers::new(&self.filter, self.json, resp.headers(), resp.status()).parse()?;
+        let headers = Headers::new(&self.filter, resp.headers());
+        headers.parse()?.display(self.json, resp.status());
 
         Ok(())
     }
