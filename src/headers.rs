@@ -68,6 +68,7 @@ impl<'a, 'b> Parsed<'a, 'b> {
             return;
         }
 
+        // TODO: Batch up the writes into a buffer io::BufWriter::new(stdout).
         self.display_headers(&self.headers);
         self.display_status(status_code);
     }
