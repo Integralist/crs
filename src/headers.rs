@@ -12,7 +12,7 @@ pub struct Headers<'a, 'b> {
 }
 
 impl<'a, 'b> Headers<'a, 'b> {
-    pub fn new(filters: &'b Option<String>, map: &'a HeaderMap) -> Self {
+    pub fn new(map: &'a HeaderMap, filters: &'b Option<String>) -> Self {
         Self { filters, map }
     }
 

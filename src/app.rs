@@ -2,7 +2,6 @@ use crate::headers::Headers;
 use crate::styles::Color;
 use anyhow::{Context, Result};
 use clap::{ArgGroup, Parser};
-use reqwest;
 
 const ABOUT: &str =
     "A CLI that can make a HTTP request, then sort, filter and display the HTTP response headers.";
@@ -34,7 +33,7 @@ impl App {
         let resp = reqwest::blocking::get(&self.url)
             .with_context(|| format!("Failed to GET: {}", &self.url))?;
 
-        let headers = Headers::new(&self.filter, resp.headers());
+        let headers = Headers::new(resp.headers(), &self.filter);
         headers.parse()?.display(self.json, resp.status());
 
         Ok(())
