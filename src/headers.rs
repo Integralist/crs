@@ -21,7 +21,7 @@ impl<'a, 'b> Headers<'a, 'b> {
 
         if let Some(f) = self.filters {
             filters = f
-                .split(",")
+                .split(',')
                 .map(|f| Regex::new(format!("(?i){f}").as_str()).unwrap())
                 .collect();
         }
@@ -34,7 +34,7 @@ impl<'a, 'b> Headers<'a, 'b> {
             .map
             .iter()
             .filter(|header| {
-                if filters.len() == 0 {
+                if filters.is_empty() {
                     return true;
                 }
                 for f in &filters {
@@ -74,7 +74,7 @@ impl<'a, 'b> Parsed<'a, 'b> {
     }
 
     fn display_headers(&self, headers: &BTreeMap<&'a str, &'b str>) {
-        for (key, value) in headers.into_iter() {
+        for (key, value) in headers.iter() {
             println!(
                 "{:?}:\n  {:?}\n",
                 key.if_supports_color(Stdout, |text| text.style(self.styles.heading)),
