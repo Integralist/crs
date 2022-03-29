@@ -5,6 +5,7 @@ use regex::Regex;
 use reqwest::header::HeaderMap;
 use reqwest::StatusCode;
 use std::collections::BTreeMap;
+use std::io::{BufWriter, Write}; // NOTE: A trait (i.e. Write) must be imported if calling its methods.
 
 pub struct Headers<'a, 'b> {
     filters: &'b Option<String>,
@@ -68,19 +69,24 @@ impl<'a, 'b> Parsed<'a, 'b> {
             return;
         }
 
-        // TODO: Batch up the writes into a buffer io::BufWriter::new(stdout).
         self.display_headers(&self.headers);
         self.display_status(status_code);
     }
 
     fn display_headers(&self, headers: &BTreeMap<&'a str, &'b str>) {
+        // Writing to Stdout using println! macros is expensive due to its implementation.
+        // e.g. allocates new String, calls a formatter, then flushes the stream.
+        // This is expensive when there's lots of data to write, and calling println! N times.
+        // To avoid this we'll write to a buffer and then flush only once to the stdout stream.
+        let mut buf = BufWriter::new(std::io::stdout());
         for (key, value) in headers.iter() {
-            println!(
-                "{:?}:\n  {:?}\n",
+            buf.write_all(format!(
+                "{:?}:\n  {:?}\n\n",
                 key.if_supports_color(Stdout, |text| text.style(self.styles.heading)),
                 value
-            );
+            ).as_bytes()).unwrap();
         }
+        buf.flush().unwrap();
     }
 
     fn display_status(&self, sc: StatusCode) {
