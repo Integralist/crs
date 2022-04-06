@@ -10,7 +10,7 @@ pub struct Styles {
 impl Styles {
     pub fn new() -> Self {
         let heading = Style::new().black().on_bright_yellow().bold();
-        let status = Style::new().black().on_bright_blue().bold();
+        let status = Style::new().black().on_bright_green().bold();
 
         Self { heading, status }
     }

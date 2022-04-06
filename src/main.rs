@@ -1,12 +1,11 @@
 mod app;
+mod args;
 mod headers;
 mod styles;
 
-use crate::app::App;
+use crate::app::run;
 use anyhow::Result;
-use clap::Parser;
 
 fn main() -> Result<()> {
-    let app = App::parse();
-    app.exec()
+    run()
 }
