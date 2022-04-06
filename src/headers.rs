@@ -1,9 +1,9 @@
-use crate::styles::Styles;
 use anyhow::Result;
+use crate::styles::Styles;
 use owo_colors::{OwoColorize, Stream::Stdout};
 use regex::Regex;
-use reqwest::header::HeaderMap;
 use reqwest::StatusCode;
+use reqwest::header::HeaderMap;
 use std::collections::BTreeMap;
 use std::io::{BufWriter, Write}; // NOTE: A trait (i.e. Write) must be imported if calling its methods.
 
