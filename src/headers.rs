@@ -90,9 +90,13 @@ impl<'a, 'b> Parsed<'a, 'b> {
     }
 
     fn display_status(&self, sc: StatusCode) {
+        let style = match sc.is_success() {
+            true => self.styles.status,
+            false => self.styles.status_bad
+        };
         println!(
             "{}: {}",
-            "Status Code".if_supports_color(Stdout, |text| text.style(self.styles.status)),
+            "Status Code".if_supports_color(Stdout, |text| text.style(style)),
             sc
         );
     }

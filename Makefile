@@ -21,3 +21,7 @@ run-example:
 .PHONY: run-example-json
 run-example-json:
 	cargo run -- --filter vary,cache https://www.fastly.com --json | jq
+
+.PHONY: run-example-failure
+run-example-failure:
+	cargo run -- --filter vary,cache https://www.fastly.com/does-not-exist

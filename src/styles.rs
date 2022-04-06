@@ -5,14 +5,16 @@ use owo_colors::Style;
 pub struct Styles {
     pub heading: Style,
     pub status: Style,
+    pub status_bad: Style,
 }
 
 impl Styles {
     pub fn new() -> Self {
         let heading = Style::new().black().on_bright_yellow().bold();
         let status = Style::new().black().on_bright_green().bold();
+        let status_bad = Style::new().black().on_bright_red().bold();
 
-        Self { heading, status }
+        Self { heading, status, status_bad }
     }
 }
 
