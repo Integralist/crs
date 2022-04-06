@@ -11,3 +11,14 @@ where
     let args = Args::parse_from(itr);
     args.exec()
 }
+
+#[test]
+fn run_success() {
+    let itr = vec![
+        "./target/debug/doesnt_matter".to_string(),
+        "--filter".to_string(),
+        "vary,cache".to_string(),
+        "https://www.fastly.com".to_string(),
+    ];
+    run(itr).expect("to run correctly");
+}
