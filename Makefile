@@ -14,10 +14,10 @@ release:
 release-example:
 	./target/release/crs --filter vary,cache https://www.fastly.com
 
-.PHONY: example
-example:
+.PHONY: run-example
+run-example:
 	cargo run -- --filter vary,cache https://www.fastly.com
 
-.PHONY: example-json
-example-json:
+.PHONY: run-example-json
+run-example-json:
 	cargo run -- --filter vary,cache https://www.fastly.com --json | jq
