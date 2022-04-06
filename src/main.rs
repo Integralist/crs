@@ -7,5 +7,5 @@ use crate::app::run;
 use anyhow::Result;
 
 fn main() -> Result<()> {
-    run()
+    run(std::env::args_os())
 }
