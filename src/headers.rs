@@ -10,14 +10,14 @@ use std::io::{BufWriter, Write}; // NOTE: A trait (i.e. Write) must be imported 
 pub struct Headers<'a, 'b, 'c> {
     filters: &'b Option<String>,
     map: &'a HeaderMap,
-    output: &'c mut (dyn Write),
+    output: &'c mut (dyn std::io::Write),
 }
 
 impl<'a, 'b, 'c> Headers<'a, 'b, 'c> {
     pub fn new(
         map: &'a HeaderMap,
         filters: &'b Option<String>,
-        output: &'c mut (dyn Write)
+        output: &'c mut (dyn std::io::Write)
     ) -> Self {
         Self { filters, map, output }
     }
@@ -65,7 +65,7 @@ impl<'a, 'b, 'c> Headers<'a, 'b, 'c> {
 pub struct Parsed<'a, 'b, 'c> {
     headers: BTreeMap<&'a str, &'b str>,
     styles: Styles,
-    output: &'c mut (dyn Write),
+    output: &'c mut (dyn std::io::Write),
 }
 
 impl<'a, 'b, 'c> Parsed<'a, 'b, 'c> {
