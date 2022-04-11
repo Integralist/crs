@@ -62,13 +62,13 @@ impl<'a, 'b, 'c> Headers<'a, 'b, 'c> {
     }
 }
 
-pub struct Parsed<'a, 'b, 'c> {
-    headers: BTreeMap<&'a str, &'b str>,
+pub struct Parsed<'a, 'b> {
+    headers: BTreeMap<&'a str, &'a str>,
     styles: Styles,
-    output: &'c mut (dyn std::io::Write),
+    output: &'b mut (dyn std::io::Write),
 }
 
-impl<'a, 'b, 'c> Parsed<'a, 'b, 'c> {
+impl<'a, 'b> Parsed<'a, 'b> {
     pub fn display(&mut self, json: bool, status_code: StatusCode) -> Result<()> {
         if json {
             // Debug output for BTreeMap is effectively JSON so no need to be parsed via serde.
