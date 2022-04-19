@@ -36,7 +36,7 @@ impl<'a, 'b, 'c> Headers<'a, 'b, 'c> {
         // This was due to a problem with HeaderName not implementing the Ord trait.
         // The 'NewType' Rust pattern also revealed a bunch of missing traits.
         // So instead we filter, map to a tuple, then collect that to a BTreeMap.
-        let headers = self
+        let headers: BTreeMap<&str, &str> = self
             .map
             .iter()
             .filter(|header| {
@@ -52,7 +52,7 @@ impl<'a, 'b, 'c> Headers<'a, 'b, 'c> {
             })
             .map(|header| (header.0.as_str(), header.1.to_str().unwrap()))
             .into_iter()
-            .collect::<BTreeMap<_, _>>();
+            .collect();
 
         Ok(Parsed {
             headers,
