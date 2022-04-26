@@ -16,16 +16,11 @@ where
 
 #[test]
 fn run_success() {
-    let itr = vec![
-        "./target/debug/doesnt_matter".to_string(),
-        "--filter".to_string(),
-        "vary,cache".to_string(),
-        "https://www.fastly.com".to_string(),
-    ];
+    use std::io::Cursor;
 
-    // NOTE: Rust Analyzer refused to accept I had imported the Cursor type so I was forced to
-    // provide a fully qualified path to it.
-    let mut output_cursor = std::io::Cursor::new(vec![]);
+    let itr = "./target/debug/doesnt_matter --filter vary,cache https://www.fastly.com".split_whitespace();
+
+    let mut output_cursor = Cursor::new(vec![]);
     let output_writer: &mut (dyn Write) = &mut output_cursor;
 
     run(itr, output_writer).expect("to run correctly");
@@ -35,6 +30,7 @@ fn run_success() {
         Ok(v) => v,
         Err(e) => panic!("Invalid UTF-8 sequence: {}", e),
     };
+
     println!("{:?}", output); // TODO: Validate the output! But to do that I must mock the HTTP GET.
 }
 
