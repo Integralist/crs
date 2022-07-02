@@ -14,7 +14,11 @@ impl Styles {
         let status = Style::new().black().on_bright_green().bold();
         let status_bad = Style::new().black().on_bright_red().bold();
 
-        Self { heading, status, status_bad }
+        Self {
+            heading,
+            status,
+            status_bad,
+        }
     }
 }
 

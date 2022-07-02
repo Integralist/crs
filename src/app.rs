@@ -1,7 +1,7 @@
-use anyhow::{Context, Result};
-use clap::Parser;
 use crate::args::Args;
 use crate::headers::Headers;
+use anyhow::{Context, Result};
+use clap::Parser;
 use std::ffi::OsString;
 use std::io::Write;
 
@@ -18,7 +18,8 @@ where
 fn run_success() {
     use std::io::Cursor;
 
-    let itr = "./target/debug/doesnt_matter --filter vary,cache https://www.fastly.com".split_whitespace();
+    let itr = "./target/debug/doesnt_matter --filter vary,cache https://www.fastly.com"
+        .split_whitespace();
 
     let mut output_cursor = Cursor::new(vec![]);
     let output_writer: &mut (dyn Write) = &mut output_cursor;

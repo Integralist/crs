@@ -1,5 +1,5 @@
-use clap::{ArgGroup, Parser};
 use crate::styles::Color;
+use clap::{ArgGroup, Parser};
 
 const ABOUT: &str =
     "A CLI that can make a HTTP request, then sort, filter and display the HTTP response headers.";

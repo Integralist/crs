@@ -1,9 +1,9 @@
-use anyhow::Result;
 use crate::styles::Styles;
+use anyhow::Result;
 use owo_colors::{OwoColorize, Stream::Stdout};
 use regex::Regex;
-use reqwest::StatusCode;
 use reqwest::header::HeaderMap;
+use reqwest::StatusCode;
 use std::collections::BTreeMap;
 use std::io::{BufWriter, Write}; // NOTE: A trait (i.e. Write) must be imported if calling its methods.
 
@@ -17,9 +17,13 @@ impl<'a, 'b, 'c> Headers<'a, 'b, 'c> {
     pub fn new(
         map: &'a HeaderMap,
         filters: &'b Option<String>,
-        output: &'c mut (dyn std::io::Write)
+        output: &'c mut (dyn std::io::Write),
     ) -> Self {
-        Self { filters, map, output }
+        Self {
+            filters,
+            map,
+            output,
+        }
     }
 
     pub fn parse(&mut self) -> Result<Parsed> {
@@ -87,11 +91,15 @@ impl<'a, 'b> Parsed<'a, 'b> {
         // Write trait so that I could mock stdout as part of the test suite.
         let mut buf = BufWriter::new(&mut self.output);
         for (key, value) in self.headers.iter() {
-            buf.write_all(format!(
-                "{:?}:\n  {:?}\n\n",
-                key.if_supports_color(Stdout, |text| text.style(self.styles.heading)),
-                value
-            ).as_bytes()).unwrap();
+            buf.write_all(
+                format!(
+                    "{:?}:\n  {:?}\n\n",
+                    key.if_supports_color(Stdout, |text| text.style(self.styles.heading)),
+                    value
+                )
+                .as_bytes(),
+            )
+            .unwrap();
         }
         buf.flush().unwrap();
 
@@ -106,7 +114,7 @@ impl<'a, 'b> Parsed<'a, 'b> {
     fn display_status(&mut self, sc: StatusCode) -> Result<()> {
         let style = match sc.is_success() {
             true => self.styles.status,
-            false => self.styles.status_bad
+            false => self.styles.status_bad,
         };
         write!(
             &mut self.output,
