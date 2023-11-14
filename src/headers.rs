@@ -55,7 +55,6 @@ impl<'a, 'b, 'c> Headers<'a, 'b, 'c> {
                 false
             })
             .map(|header| (header.0.as_str(), header.1.to_str().unwrap()))
-            .into_iter()
             .collect();
 
         Ok(Parsed {
