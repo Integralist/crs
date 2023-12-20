@@ -1,4 +1,4 @@
-use clap::ArgEnum;
+use clap::ValueEnum;
 use owo_colors::Style;
 
 #[derive(Debug)]
@@ -22,7 +22,7 @@ impl Styles {
     }
 }
 
-#[derive(ArgEnum, Clone, Copy, Debug)]
+#[derive(ValueEnum, Clone, Copy, Debug)]
 pub enum Color {
     Always,
     Auto,

@@ -1,7 +1,7 @@
 use crate::styles::Color;
 use clap::{ArgGroup, Parser};
 
-const ABOUT: &str =
+pub const ABOUT: &str =
     "A CLI that can make a HTTP request, then sort, filter and display the HTTP response headers.";
 
 #[derive(Parser, Debug)]
@@ -12,7 +12,7 @@ const ABOUT: &str =
 ))]
 pub struct Args {
     /// Output formatting can be modified based on TTY
-    #[clap(short, long, arg_enum, default_value = "auto")]
+    #[clap(short, long, value_enum, default_value = "auto")]
     pub color: Color,
     /// Comma-separated list of headers to display
     #[clap(short, long)]

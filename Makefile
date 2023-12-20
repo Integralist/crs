@@ -20,6 +20,11 @@ release: ## Generate release binary
 release-example: ## Run release binary
 	./target/release/crs --filter vary,cache https://www.fastly.com
 
+# Run application code
+.PHONY: run-example
+run: ## Run app with custom args (e.g. ARGS=--help)
+	cargo run -- $(ARGS)
+
 # Validate runtime code
 .PHONY: run-example
 run-example: ## Run app using www.fastly.com
