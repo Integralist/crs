@@ -5,6 +5,11 @@
 check: ## Validate app can compile
 	cargo check
 
+# Install binary
+.PHONY: install
+install: release ## Install binary
+	mv ./target/release/crs /usr/local/bin/crs
+
 # Test suite
 .PHONY: test
 test: ## Run test suite
