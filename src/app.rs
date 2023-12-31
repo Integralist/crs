@@ -6,10 +6,11 @@ use std::ffi::OsString;
 use std::io::Write;
 
 /// run parses the given itr arguments and triggers the primary program logic.
-pub fn run<I, T>(itr: I, output: &mut (dyn Write)) -> Result<()>
+pub fn run<I, T, W>(itr: I, output: &mut W) -> Result<()>
 where
     I: IntoIterator<Item = T>,
     T: Into<OsString> + Clone,
+    W: Write,
 {
     exec(Args::parse_from(itr), output)
 }
@@ -22,9 +23,8 @@ fn run_success() {
         .split_whitespace();
 
     let mut output_cursor = Cursor::new(vec![]);
-    let output_writer: &mut (dyn Write) = &mut output_cursor;
 
-    run(itr, output_writer).expect("to run correctly");
+    run(itr, &mut output_cursor).expect("to run correctly");
 
     let buf = output_cursor.into_inner();
     let output = match std::str::from_utf8(&buf) {
@@ -36,7 +36,7 @@ fn run_success() {
 }
 
 /// exec makes a HTTP request for the configured URL and constructs a Header for display.
-fn exec(args: Args, output: &mut (dyn Write)) -> Result<()> {
+fn exec<W: Write>(args: Args, output: &mut W) -> Result<()> {
     args.color.init();
 
     let resp = reqwest::blocking::get(&args.url)
