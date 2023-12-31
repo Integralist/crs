@@ -5,19 +5,19 @@ use regex::Regex;
 use reqwest::header::HeaderMap;
 use reqwest::StatusCode;
 use std::collections::BTreeMap;
-use std::io::{BufWriter, Write}; // NOTE: A trait (i.e. Write) must be imported if calling its methods.
+use std::io::{BufWriter, Write};
 
 pub struct Headers<'a, 'b, 'c> {
     filters: &'b Option<String>,
     map: &'a HeaderMap,
-    output: &'c mut (dyn std::io::Write),
+    output: &'c mut (dyn Write),
 }
 
 impl<'a, 'b, 'c> Headers<'a, 'b, 'c> {
     pub fn new(
         map: &'a HeaderMap,
         filters: &'b Option<String>,
-        output: &'c mut (dyn std::io::Write),
+        output: &'c mut (dyn Write),
     ) -> Self {
         Self {
             filters,
@@ -68,7 +68,7 @@ impl<'a, 'b, 'c> Headers<'a, 'b, 'c> {
 pub struct Parsed<'a, 'b> {
     headers: BTreeMap<&'a str, &'a str>,
     styles: Styles,
-    output: &'b mut (dyn std::io::Write),
+    output: &'b mut (dyn Write),
 }
 
 impl<'a, 'b> Parsed<'a, 'b> {
