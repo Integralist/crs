@@ -7,14 +7,14 @@ use reqwest::StatusCode;
 use std::collections::BTreeMap;
 use std::io::{BufWriter, Write};
 
-pub struct Headers<'a, 'b> {
+pub struct Headers<'a, 'b, W: Write> {
     filters: Option<String>,
     map: &'a HeaderMap,
-    output: &'b mut (dyn Write),
+    output: &'b mut W,
 }
 
-impl<'a, 'b> Headers<'a, 'b> {
-    pub fn new(map: &'a HeaderMap, filters: Option<String>, output: &'b mut (dyn Write)) -> Self {
+impl<'a, 'b, W: Write> Headers<'a, 'b, W> {
+    pub fn new(map: &'a HeaderMap, filters: Option<String>, output: &'b mut W) -> Self {
         Self {
             filters,
             map,
