@@ -42,7 +42,7 @@ fn exec(args: Args, output: &mut (dyn Write)) -> Result<()> {
     let resp = reqwest::blocking::get(&args.url)
         .with_context(|| format!("Failed to GET: {}", &args.url))?;
 
-    let mut headers = Headers::new(resp.headers(), &args.filter, output);
+    let mut headers = Headers::new(resp.headers(), args.filter, output);
     headers.parse()?.display(args.json, resp.status())?;
 
     Ok(())

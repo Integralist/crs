@@ -7,18 +7,14 @@ use reqwest::StatusCode;
 use std::collections::BTreeMap;
 use std::io::{BufWriter, Write};
 
-pub struct Headers<'a, 'b, 'c> {
-    filters: &'b Option<String>,
+pub struct Headers<'a, 'b> {
+    filters: Option<String>,
     map: &'a HeaderMap,
-    output: &'c mut (dyn Write),
+    output: &'b mut (dyn Write),
 }
 
-impl<'a, 'b, 'c> Headers<'a, 'b, 'c> {
-    pub fn new(
-        map: &'a HeaderMap,
-        filters: &'b Option<String>,
-        output: &'c mut (dyn Write),
-    ) -> Self {
+impl<'a, 'b> Headers<'a, 'b> {
+    pub fn new(map: &'a HeaderMap, filters: Option<String>, output: &'b mut (dyn Write)) -> Self {
         Self {
             filters,
             map,
@@ -29,7 +25,7 @@ impl<'a, 'b, 'c> Headers<'a, 'b, 'c> {
     pub fn parse(&mut self) -> Result<Parsed> {
         let mut filters: Vec<regex::Regex> = Vec::new();
 
-        if let Some(f) = self.filters {
+        if let Some(f) = &self.filters {
             filters = f
                 .split(',')
                 .map(|f| Regex::new(format!("(?i){f}").as_str()).unwrap())
