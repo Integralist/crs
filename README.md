@@ -2,7 +2,7 @@
 
 The `crs` command is a Rust version of the [Carbon](https://github.com/Integralist/carbon) CLI.
 
-Carbon can make a HTTP request, then sort, filter and display the HTTP response headers. 
+Carbon can make a HTTP request, then sort, filter and display the HTTP response headers.
 
 > **NOTE**: The name comes from carbon filtering: method of filtering impurities.
 
@@ -25,4 +25,14 @@ The default behaviour is to display all response headers, followed by the HTTP s
 
 > **NOTE**: The following example pipes to [`jq`](https://stedolan.github.io/jq/) for pretty-printing.
 
-![Example of filtering and JSON](./static/3-Filter-and-JSON.png)
+![Example of filtering](./static/3-Filter.png)
+![Example of filtering and JSON](./static/4-Filter-and-JSON.png)
+
+### Response Body
+
+- The `--body` flag will display the response body below the HTTP headers/status.
+
+> **NOTE:** The `--body` flag is incompatible with the `--json` flag\
+> i.e. don't use `--json` and also try to include the response body.
+
+![Example of response body](./static/5-Body.png)
