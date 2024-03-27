@@ -5,7 +5,7 @@ pub const ABOUT: &str =
     "A CLI that can make a HTTP request, then sort, filter and display the HTTP response headers.";
 
 #[derive(Parser, Debug)]
-#[clap(author, version = "1.0.0", about = ABOUT)]
+#[clap(author, version = "1.1.0", about = ABOUT)]
 #[clap(group(
         ArgGroup::new("format")
         .args(&["json", "color"]),
@@ -20,6 +20,9 @@ pub struct Args {
     /// Output is formatted into JSON
     #[clap(short, long)]
     pub json: bool,
+    /// Output includes response body (incompatible with --json)
+    #[clap(short, long)]
+    pub body: bool,
     /// URL to request
     pub url: String,
 }

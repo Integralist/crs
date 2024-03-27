@@ -1,5 +1,7 @@
 .DEFAULT_GOAL := release
 
+TEST_URL ?= "https://httpbin.org/anything"
+
 # Compilation check
 .PHONY: check
 check: ## Validate app can compile
@@ -23,7 +25,7 @@ release: ## Generate release binary
 # Validate release build
 .PHONY: release-example
 release-example: ## Run release binary
-	./target/release/crs --filter vary,cache https://www.fastly.com
+	./target/release/crs --filter server,content $(TEST_URL)
 
 # Run application code
 .PHONY: run-example
@@ -32,18 +34,18 @@ run: ## Run app with custom args (e.g. ARGS=--help)
 
 # Validate runtime code
 .PHONY: run-example
-run-example: ## Run app using www.fastly.com
-	cargo run -- --filter vary,cache https://www.fastly.com
+run-example: ## Run app using TEST_URL + include response body
+	cargo run -- --filter server,content --body $(TEST_URL)
 
 # Validate runtime code with JSON output
 .PHONY: run-example-json
 run-example-json: ## Run app and expect JSON output
-	cargo run -- --filter vary,cache https://www.fastly.com --json | jq
+	cargo run -- --filter server,content $(TEST_URL) --json | jq
 
 # Validate runtime code with expected failure
 .PHONY: run-example-failure
 run-example-failure:  ## Run app but expect error output
-	cargo run -- --filter vary,cache https://www.fastly.com/does-not-exist
+	cargo run -- --filter server,content https://httpbin.org/status/404
 
 .PHONY: help
 help:

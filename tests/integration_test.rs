@@ -23,5 +23,5 @@ fn version_output() {
 
     let output = String::from_utf8_lossy(&output.stdout);
     println!("{:?}", output);
-    assert!(output.contains("crs 1.0.0"));
+    assert!(output.contains("crs 1.1.0"));
 }

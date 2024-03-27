@@ -1,7 +1,9 @@
 use crate::args::Args;
 use crate::headers::Headers;
+use crate::styles::Styles;
 use anyhow::{Context, Result};
 use clap::Parser;
+use owo_colors::{OwoColorize, Stream::Stdout};
 use std::ffi::OsString;
 use std::io::Write;
 
@@ -44,6 +46,16 @@ fn exec<W: Write>(args: Args, output: &mut W) -> Result<()> {
 
     let mut headers = Headers::new(resp.headers(), args.filter, output);
     headers.parse()?.display(args.json, resp.status())?;
+
+    if args.body {
+        let style = Styles::new().body;
+        write!(
+            output,
+            "\n\n{}:\n\n{}",
+            "Response Body".if_supports_color(Stdout, |text| text.style(style)),
+            resp.text().unwrap()
+        )?;
+    };
 
     Ok(())
 }

@@ -6,6 +6,7 @@ pub struct Styles {
     pub heading: Style,
     pub status: Style,
     pub status_bad: Style,
+    pub body: Style,
 }
 
 impl Styles {
@@ -13,11 +14,13 @@ impl Styles {
         let heading = Style::new().black().on_bright_yellow().bold();
         let status = Style::new().black().on_bright_green().bold();
         let status_bad = Style::new().black().on_bright_red().bold();
+        let body = Style::new().black().on_bright_blue().bold();
 
         Self {
             heading,
             status,
             status_bad,
+            body,
         }
     }
 }
