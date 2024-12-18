@@ -36,3 +36,11 @@ The default behaviour is to display all response headers, followed by the HTTP s
 > i.e. don't use `--json` and also try to include the response body.
 
 ![Example of response body](./static/5-Body.png)
+
+## TODO
+
+- [Deploy binaries via GitHub Actions][1]
+- [Read article on testing a CLI in Rust][2]
+
+[1]: https://dzfrias.dev/blog/deploy-rust-cross-platform-github-actions/
+[2]: https://rust.code-maven.com/test-command-line-application
